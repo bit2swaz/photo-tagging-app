@@ -8,21 +8,21 @@ export default function Landing() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="py-16 px-6 flex flex-col items-center text-center">
+      <section className="py-16 px-6 flex flex-col items-center text-center bg-white">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">Welcome to Waldo Quest</h1>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl">
           Find the characters. Beat the clock. Rule the leaderboard.
         </p>
         <button 
           onClick={scrollToHowToPlay}
-          className="px-6 py-3 bg-indigo-500 text-white rounded-md font-medium"
+          className="px-6 py-3 bg-indigo-500 text-white rounded-md font-medium hover:bg-indigo-600 transition duration-200"
         >
           Play the Game
         </button>
       </section>
 
       {/* How To Play Section */}
-      <section id="how-to-play" className="py-16 px-6">
+      <section id="how-to-play" className="py-16 px-6 bg-gray-50">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-8 text-center">How to Play</h2>
           <ul className="space-y-4 text-lg">
@@ -47,7 +47,7 @@ export default function Landing() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-6 bg-gray-50">
+      <section className="py-16 px-6 bg-gray-100">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold mb-12 text-center">Why Waldo Quest?</h2>
           <div className="grid md:grid-cols-3 gap-8">
@@ -68,11 +68,11 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-6 text-center">
+      <section className="py-16 px-6 text-center bg-gray-50">
         <h2 className="text-2xl font-bold mb-6">Ready to test your skills?</h2>
         <button 
           onClick={scrollToHowToPlay}
-          className="px-6 py-3 bg-indigo-500 text-white rounded-md font-medium inline-block"
+          className="px-6 py-3 bg-indigo-500 text-white rounded-md font-medium inline-block hover:bg-indigo-600 transition duration-200"
         >
           Play the Game
         </button>
