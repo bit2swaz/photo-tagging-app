@@ -182,7 +182,8 @@ app.post('/api/game/validate', async (req, res) => {
     if (gameSession.foundCharacters.includes(character.id)) {
       return res.json({ 
         isCorrect: false,
-        message: 'This character has already been found.'
+        message: 'This character has already been found.',
+        isGameComplete: gameSession.foundCharacters.length === gameSession.totalCharacters
       });
     }
     
@@ -201,6 +202,9 @@ app.post('/api/game/validate', async (req, res) => {
       // Add character to found characters
       gameSession.foundCharacters.push(character.id);
       
+      // Check if the game is complete
+      const isGameComplete = gameSession.foundCharacters.length === gameSession.totalCharacters;
+      
       // Return success response with character details
       return res.json({
         isCorrect: true,
@@ -208,12 +212,14 @@ app.post('/api/game/validate', async (req, res) => {
         x1_percent: character.x1_percent,
         y1_percent: character.y1_percent,
         x2_percent: character.x2_percent,
-        y2_percent: character.y2_percent
+        y2_percent: character.y2_percent,
+        isGameComplete
       });
     } else {
       // Return incorrect response
       return res.json({
-        isCorrect: false
+        isCorrect: false,
+        isGameComplete: false
       });
     }
     
