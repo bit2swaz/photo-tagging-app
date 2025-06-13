@@ -113,6 +113,10 @@ app.post('/api/game/start', async (req, res) => {
       return res.status(404).json({ error: 'Photo not found' });
     }
     
+    // Fetch the total count of characters for this photo
+    const characterCountResult = await query('SELECT COUNT(*) as count FROM characters WHERE photo_id = $1', [parseInt(photoId)]);
+    const totalCharacters = parseInt(characterCountResult[0].count);
+    
     // Generate a unique game session ID
     const gameSessionId = crypto.randomUUID();
     const startTime = Date.now();
@@ -122,7 +126,8 @@ app.post('/api/game/start', async (req, res) => {
       photoId: parseInt(photoId),
       playerName,
       startTime,
-      foundCharacters: []
+      foundCharacters: [],
+      totalCharacters
     });
     
     // Return the game session details
