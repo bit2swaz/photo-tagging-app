@@ -70,12 +70,12 @@ export default function Landing() {
       {/* CTA Section */}
       <section className="py-16 px-6 text-center">
         <h2 className="text-2xl font-bold mb-6">Ready to test your skills?</h2>
-        <Link 
-          to="/play" 
+        <button 
+          onClick={scrollToHowToPlay}
           className="px-6 py-3 bg-indigo-500 text-white rounded-md font-medium inline-block"
         >
           Play the Game
-        </Link>
+        </button>
       </section>
     </div>
   );
