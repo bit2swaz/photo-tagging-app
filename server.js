@@ -111,6 +111,87 @@ app.post('/api/game/start', async (req, res) => {
   }
 });
 
+app.post('/api/game/validate', async (req, res) => {
+  try {
+    const { gameSessionId, characterName, clickX_percent, clickY_percent } = req.body;
+    
+    // Validate inputs
+    if (!gameSessionId || typeof gameSessionId !== 'string') {
+      return res.status(400).json({ error: 'Valid game session ID is required.' });
+    }
+    
+    if (!characterName || typeof characterName !== 'string') {
+      return res.status(400).json({ error: 'Character name is required.' });
+    }
+    
+    if (clickX_percent === undefined || clickY_percent === undefined || 
+        isNaN(parseFloat(clickX_percent)) || isNaN(parseFloat(clickY_percent))) {
+      return res.status(400).json({ error: 'Valid click coordinates are required.' });
+    }
+    
+    // Retrieve the game session
+    const gameSession = activeGameSessions.get(gameSessionId);
+    if (!gameSession) {
+      return res.status(404).json({ error: 'Game session not found. The session may have expired.' });
+    }
+    
+    // Fetch the character data
+    const characters = await query(
+      'SELECT id, name, x1_percent, y1_percent, x2_percent, y2_percent FROM characters WHERE photo_id = $1 AND name = $2',
+      [gameSession.photoId, characterName]
+    );
+    
+    if (characters.length === 0) {
+      return res.status(404).json({ error: 'Character not found for this photo.' });
+    }
+    
+    const character = characters[0];
+    
+    // Check if character has already been found
+    if (gameSession.foundCharacters.includes(character.id)) {
+      return res.json({ 
+        isCorrect: false,
+        message: 'This character has already been found.'
+      });
+    }
+    
+    // Convert coordinates to numbers for comparison
+    const x = parseFloat(clickX_percent);
+    const y = parseFloat(clickY_percent);
+    const x1 = parseFloat(character.x1_percent);
+    const y1 = parseFloat(character.y1_percent);
+    const x2 = parseFloat(character.x2_percent);
+    const y2 = parseFloat(character.y2_percent);
+    
+    // Check if click is within character's bounding box
+    const isWithinBounds = x >= x1 && x <= x2 && y >= y1 && y <= y2;
+    
+    if (isWithinBounds) {
+      // Add character to found characters
+      gameSession.foundCharacters.push(character.id);
+      
+      // Return success response with character details
+      return res.json({
+        isCorrect: true,
+        characterId: character.id,
+        x1_percent: character.x1_percent,
+        y1_percent: character.y1_percent,
+        x2_percent: character.x2_percent,
+        y2_percent: character.y2_percent
+      });
+    } else {
+      // Return incorrect response
+      return res.json({
+        isCorrect: false
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error validating character click:', error);
+    res.status(500).json({ error: 'Failed to validate character click' });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
