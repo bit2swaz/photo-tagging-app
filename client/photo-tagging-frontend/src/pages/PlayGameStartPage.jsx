@@ -1,37 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../styles/PlayGameStartPage.module.css';
 
 const PlayGameStartPage = () => {
   const [playerName, setPlayerName] = useState('');
-  const [selectedDifficulty, setSelectedDifficulty] = useState(null);
+  const [selectedMapId, setSelectedMapId] = useState(null);
+  const [maps, setMaps] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Map difficulty options
-  const difficultyOptions = [
-    {
-      id: 'easy',
-      title: 'Easy Map',
-      description: 'Forest Adventure',
-      characters: 3,
-      estimatedTime: '2-5 min',
-      imageUrl: '/placeholders/map1.jpg'
-    },
-    {
-      id: 'medium',
-      title: 'Medium Map',
-      description: 'City Chaos',
-      characters: 5,
-      estimatedTime: '5-10 min',
-      imageUrl: '/placeholders/map2.jpg'
-    },
-    {
-      id: 'hard',
-      title: 'Hard Map',
-      description: 'Space Station',
-      characters: 7,
-      estimatedTime: '10-15 min',
-      imageUrl: '/placeholders/map3.jpg'
-    }
-  ];
+  // Fetch maps from backend
+  useEffect(() => {
+    const fetchMaps = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('http://localhost:3000/api/photos');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setMaps(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching maps:', err);
+        setError('Failed to load maps. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMaps();
+  }, []);
 
   // Handle player name input change
   const handleNameChange = (e) => {
@@ -44,13 +44,41 @@ const PlayGameStartPage = () => {
     setPlayerName(`Guest${randomNumber}`);
   };
 
-  // Handle difficulty selection
-  const handleDifficultySelect = (difficultyId) => {
-    setSelectedDifficulty(difficultyId);
+  // Handle map selection
+  const handleMapSelect = (mapId) => {
+    setSelectedMapId(mapId);
+  };
+
+  // Get estimated time based on difficulty
+  const getEstimatedTime = (difficulty) => {
+    switch (difficulty.toLowerCase()) {
+      case 'easy':
+        return '2-5 min';
+      case 'medium':
+        return '5-10 min';
+      case 'hard':
+        return '10-15 min';
+      default:
+        return 'varies';
+    }
+  };
+
+  // Get character count based on difficulty
+  const getCharacterCount = (difficulty) => {
+    switch (difficulty.toLowerCase()) {
+      case 'easy':
+        return 3;
+      case 'medium':
+        return 5;
+      case 'hard':
+        return 7;
+      default:
+        return '?';
+    }
   };
 
   // Check if Start Game button should be enabled
-  const isStartButtonDisabled = !playerName || !selectedDifficulty;
+  const isStartButtonDisabled = !playerName || !selectedMapId;
 
   // Handle start game button click
   const handleStartGame = () => {
@@ -58,7 +86,7 @@ const PlayGameStartPage = () => {
     // For now, we'll just log the selected options
     console.log('Starting game with:', {
       playerName,
-      difficulty: selectedDifficulty
+      mapId: selectedMapId
     });
   };
 
@@ -91,32 +119,53 @@ const PlayGameStartPage = () => {
         </div>
       </section>
 
-      {/* Map Difficulty Section */}
+      {/* Map Selection Section */}
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Choose Your Map Difficulty</h2>
-        <div className={styles.difficultyOptions}>
-          {difficultyOptions.map((difficulty) => (
-            <div
-              key={difficulty.id}
-              className={`${styles.difficultyCard} ${selectedDifficulty === difficulty.id ? styles.selected : ''}`}
-              onClick={() => handleDifficultySelect(difficulty.id)}
+        <h2 className={styles.sectionTitle}>Choose Your Map</h2>
+        
+        {isLoading && <p>Loading maps...</p>}
+        
+        {error && (
+          <div className={styles.errorMessage}>
+            <p>{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
             >
-              <img
-                src={difficulty.imageUrl}
-                alt={difficulty.title}
-                className={styles.cardImage}
-              />
-              <div className={styles.cardContent}>
-                <h3 className={styles.cardTitle}>{difficulty.title}</h3>
-                <p className={styles.cardDescription}>{difficulty.description}</p>
-                <div className={styles.cardInfo}>
-                  <span>{difficulty.characters} characters</span>
-                  <span>~{difficulty.estimatedTime}</span>
+              Retry
+            </button>
+          </div>
+        )}
+        
+        {!isLoading && !error && maps.length === 0 && (
+          <p>No maps available. Please check back later.</p>
+        )}
+        
+        {!isLoading && !error && maps.length > 0 && (
+          <div className={styles.difficultyOptions}>
+            {maps.map((map) => (
+              <div
+                key={map.id}
+                className={`${styles.difficultyCard} ${selectedMapId === map.id ? styles.selected : ''}`}
+                onClick={() => handleMapSelect(map.id)}
+              >
+                <img
+                  src={map.image_url}
+                  alt={map.name}
+                  className={styles.cardImage}
+                />
+                <div className={styles.cardContent}>
+                  <h3 className={styles.cardTitle}>{map.name}</h3>
+                  <p className={styles.cardDescription}>{map.difficulty} Difficulty</p>
+                  <div className={styles.cardInfo}>
+                    <span>{getCharacterCount(map.difficulty)} characters</span>
+                    <span>~{getEstimatedTime(map.difficulty)}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Start Game Button */}

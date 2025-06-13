@@ -153,6 +153,31 @@
   opacity: 0.7;
 }
 
+/* Error Message */
+.errorMessage {
+  background-color: #ffe0e0;
+  border-left: 4px solid #ff5252;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0 5px 5px 0;
+}
+
+.retryButton {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.retryButton:hover {
+  background-color: #ff5252;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
