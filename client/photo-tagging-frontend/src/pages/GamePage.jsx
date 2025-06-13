@@ -24,6 +24,10 @@ const GamePage = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [isGameComplete, setIsGameComplete] = useState(false);
   
+  // Countdown state
+  const [countdown, setCountdown] = useState(3);
+  const [showCountdown, setShowCountdown] = useState(false);
+  
   // Debug mode state
   const [debugMode, setDebugMode] = useState(false);
   
@@ -35,6 +39,25 @@ const GamePage = () => {
     clickedX: 0,
     clickedY: 0
   });
+
+  // Countdown effect
+  useEffect(() => {
+    let countdownInterval;
+    
+    if (showCountdown && countdown > 0) {
+      countdownInterval = setInterval(() => {
+        setCountdown(prevCount => prevCount - 1);
+      }, 1000);
+    } else if (showCountdown && countdown === 0) {
+      // When countdown reaches 0, hide countdown and start the game timer
+      setShowCountdown(false);
+      setIsRunning(true);
+    }
+    
+    return () => {
+      if (countdownInterval) clearInterval(countdownInterval);
+    };
+  }, [showCountdown, countdown]);
 
   // Timer effect
   useEffect(() => {
@@ -98,12 +121,12 @@ const GamePage = () => {
         // Start a new game session
         await startGameSession();
         
-        // Start the timer
-        setIsRunning(true);
+        // Start countdown instead of directly starting the timer
+        setShowCountdown(true);
+        setIsLoading(false);
       } catch (err) {
         console.error('Error fetching game data:', err);
         setError(`Failed to load game data: ${err.message}`);
-      } finally {
         setIsLoading(false);
       }
     };
@@ -349,18 +372,28 @@ const GamePage = () => {
           </div>
         )}
         
+        {/* Countdown overlay */}
+        {showCountdown && (
+          <div className={styles.countdownOverlay}>
+            <div className={styles.countdownContainer}>
+              <div className={styles.countdownNumber}>{countdown}</div>
+              <div className={styles.countdownText}>Get Ready!</div>
+            </div>
+          </div>
+        )}
+        
         <div className={styles.gameImageContainer} ref={gameImageContainerRef}>
           {currentPhoto && (
             <img 
               src={currentPhoto.image_url} 
               alt={currentPhoto.name}
-              className={styles.gameImage}
+              className={`${styles.gameImage} ${showCountdown ? styles.gameImageDimmed : ''}`}
               onClick={handleImageClick}
             />
           )}
           
           {/* Debug mode bounding boxes */}
-          {debugMode && charactersToFind.map(character => (
+          {debugMode && !showCountdown && charactersToFind.map(character => (
             <div
               key={`debug-${character.id}`}
               className={styles.debugBox}
@@ -376,7 +409,7 @@ const GamePage = () => {
           ))}
           
           {/* Render markers for found characters */}
-          {foundCharacters.map(character => (
+          {!showCountdown && foundCharacters.map(character => (
             <Marker 
               key={character.id}
               x1_percent={character.x1_percent}
@@ -389,7 +422,7 @@ const GamePage = () => {
           ))}
           
           {/* Debug mode bounding boxes for found characters */}
-          {debugMode && foundCharacters.map(character => (
+          {debugMode && !showCountdown && foundCharacters.map(character => (
             <div
               key={`debug-found-${character.id}`}
               className={`${styles.debugBox} ${styles.debugBoxFound}`}
@@ -404,7 +437,7 @@ const GamePage = () => {
             </div>
           ))}
           
-          {targetingBox.isVisible && !isGameComplete && (
+          {targetingBox.isVisible && !isGameComplete && !showCountdown && (
             <>
               <div 
                 className={styles.targetingBox}
@@ -429,7 +462,7 @@ const GamePage = () => {
           )}
           
           {/* Feedback message */}
-          {feedback.isVisible && (
+          {feedback.isVisible && !showCountdown && (
             <div 
               className={`${styles.feedbackMessage} ${feedback.isSuccess ? styles.successFeedback : styles.errorFeedback}`}
             >
