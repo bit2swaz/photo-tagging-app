@@ -19,9 +19,35 @@
   gap: 1rem;
 }
 
+.gameControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .timer {
   font-size: 1.2rem;
   font-weight: bold;
+}
+
+.soundButton {
+  background-color: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.soundButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.soundMuted {
+  color: #ff6b6b;
+  border-color: #ff6b6b;
 }
 
 .gameContent {

@@ -11,6 +11,13 @@ const GamePage = () => {
   const { photoId, playerName } = location.state || {};
   const gameImageContainerRef = useRef(null);
   
+  // Audio refs
+  const correctSoundRef = useRef(null);
+  const incorrectSoundRef = useRef(null);
+  const gameStartSoundRef = useRef(null);
+  const gameEndSoundRef = useRef(null);
+  const bgMusicRef = useRef(null);
+  
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPhoto, setCurrentPhoto] = useState(null);
@@ -36,6 +43,9 @@ const GamePage = () => {
   const [showHint, setShowHint] = useState(false);
   const [isHintLoading, setIsHintLoading] = useState(false);
   
+  // Audio state
+  const [isMuted, setIsMuted] = useState(false);
+  
   // Targeting box state
   const [targetingBox, setTargetingBox] = useState({
     isVisible: false,
@@ -44,6 +54,53 @@ const GamePage = () => {
     clickedX: 0,
     clickedY: 0
   });
+
+  // Initialize audio elements
+  useEffect(() => {
+    correctSoundRef.current = new Audio('/audio/correct-find.mp3');
+    incorrectSoundRef.current = new Audio('/audio/incorrect-find.mp3');
+    gameStartSoundRef.current = new Audio('/audio/game-start.mp3');
+    gameEndSoundRef.current = new Audio('/audio/game-end.mp3');
+    bgMusicRef.current = new Audio('/audio/background-music.mp3');
+    
+    // Configure background music
+    if (bgMusicRef.current) {
+      bgMusicRef.current.loop = true;
+      bgMusicRef.current.volume = 0.3; // Lower volume for background music
+    }
+    
+    // Cleanup function
+    return () => {
+      if (bgMusicRef.current) {
+        bgMusicRef.current.pause();
+        bgMusicRef.current.currentTime = 0;
+      }
+    };
+  }, []);
+  
+  // Handle mute/unmute
+  useEffect(() => {
+    if (correctSoundRef.current) correctSoundRef.current.muted = isMuted;
+    if (incorrectSoundRef.current) incorrectSoundRef.current.muted = isMuted;
+    if (gameStartSoundRef.current) gameStartSoundRef.current.muted = isMuted;
+    if (gameEndSoundRef.current) gameEndSoundRef.current.muted = isMuted;
+    if (bgMusicRef.current) bgMusicRef.current.muted = isMuted;
+  }, [isMuted]);
+
+  // Play sound helper function
+  const playSound = (soundRef) => {
+    if (soundRef.current && !isMuted) {
+      soundRef.current.currentTime = 0; // Reset to start
+      soundRef.current.play().catch(error => {
+        console.error('Error playing sound:', error);
+      });
+    }
+  };
+
+  // Toggle mute
+  const toggleMute = () => {
+    setIsMuted(prev => !prev);
+  };
 
   // Calculate progress percentage
   const progressPercentage = () => {
@@ -64,6 +121,16 @@ const GamePage = () => {
       // When countdown reaches 0, hide countdown and start the game timer
       setShowCountdown(false);
       setIsRunning(true);
+      
+      // Play game start sound and background music
+      playSound(gameStartSoundRef);
+      
+      // Start background music
+      if (bgMusicRef.current && !isMuted) {
+        bgMusicRef.current.play().catch(error => {
+          console.error('Error playing background music:', error);
+        });
+      }
     }
     
     return () => {
@@ -312,6 +379,9 @@ const GamePage = () => {
       const result = await response.json();
       
       if (result.isCorrect) {
+        // Play correct sound
+        playSound(correctSoundRef);
+        
         // Add character to found characters with bounding box information
         const foundCharacter = {
           id: character.id,
@@ -336,9 +406,21 @@ const GamePage = () => {
           setIsGameComplete(true);
           setIsRunning(false);
           showFeedback('Game Complete!', true);
+          
+          // Stop background music and play game end sound
+          if (bgMusicRef.current) {
+            bgMusicRef.current.pause();
+            bgMusicRef.current.currentTime = 0;
+          }
+          
+          playSound(gameEndSoundRef);
+          
           submitScore();
         }
       } else {
+        // Play incorrect sound
+        playSound(incorrectSoundRef);
+        
         // Incorrect selection
         showFeedback('Try again!', false);
       }
@@ -412,7 +494,16 @@ const GamePage = () => {
             Toggle Debug Boxes
           </button>
         </div>
-        <div className={styles.timer}>{formatTime(timeElapsed)}</div>
+        <div className={styles.gameControls}>
+          <button 
+            className={`${styles.soundButton} ${isMuted ? styles.soundMuted : ''}`} 
+            onClick={toggleMute}
+            aria-label={isMuted ? "Unmute sound" : "Mute sound"}
+          >
+            {isMuted ? "🔇" : "🔊"}
+          </button>
+          <div className={styles.timer}>{formatTime(timeElapsed)}</div>
+        </div>
       </header>
       
       <main className={styles.gameContent}>
