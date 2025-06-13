@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
 import NavBar from './components/NavBar'
+import Footer from './components/Footer'
 import LandingPage from './pages/LandingPage'
 import HowToPlayPage from './pages/HowToPlayPage'
 import PlayGameStartPage from './pages/PlayGameStartPage'
@@ -19,6 +20,7 @@ function App() {
             <Route path="/play/game" element={<GamePage />} />
           </Routes>
         </div>
+        <Footer />
       </div>
     </BrowserRouter>
   )

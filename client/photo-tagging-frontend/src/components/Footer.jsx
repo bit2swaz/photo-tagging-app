@@ -27,6 +27,9 @@ const Footer = () => {
       
       <div className={styles.footerBottom}>
         <p>&copy; {currentYear} Photo Tagging Game. All rights reserved.</p>
+        <p className={styles.creatorInfo}>
+          Made with ❤ by <a href="https://github.com/bit2swaz" className={styles.githubLink} target="_blank" rel="noopener noreferrer">bit2swaz</a>
+        </p>
       </div>
     </footer>
   );

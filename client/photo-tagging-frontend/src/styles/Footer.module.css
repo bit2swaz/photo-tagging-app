@@ -71,6 +71,46 @@
   font-size: 0.9rem;
 }
 
+.creatorInfo {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #bbb;
+}
+
+.githubLink {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 600;
+  position: relative;
+  transition: all var(--transition-normal);
+  padding: 0 2px;
+}
+
+.githubLink::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--accent-color);
+  transition: width var(--transition-normal);
+}
+
+.githubLink:hover {
+  color: var(--accent-light);
+  transform: translateY(-2px) scale(1.05);
+}
+
+.githubLink:hover::after {
+  width: 100%;
+}
+
+.githubLink:active {
+  color: var(--accent-dark);
+  transform: scale(0.95);
+}
+
 @media (max-width: 768px) {
   .footerContent {
     flex-direction: column;
