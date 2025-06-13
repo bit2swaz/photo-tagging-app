@@ -18,6 +18,11 @@ const GamePage = () => {
   const [gameSessionId, setGameSessionId] = useState(null);
   const [feedback, setFeedback] = useState({ message: '', isVisible: false, isSuccess: false });
   
+  // Game timer state
+  const [timeElapsed, setTimeElapsed] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isGameComplete, setIsGameComplete] = useState(false);
+  
   // Targeting box state
   const [targetingBox, setTargetingBox] = useState({
     isVisible: false,
@@ -26,6 +31,30 @@ const GamePage = () => {
     clickedX: 0,
     clickedY: 0
   });
+
+  // Timer effect
+  useEffect(() => {
+    let interval;
+    
+    if (isRunning) {
+      interval = setInterval(() => {
+        setTimeElapsed(prevTime => prevTime + 100);
+      }, 100);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRunning]);
+
+  // Format time as MM:SS.ms
+  const formatTime = (milliseconds) => {
+    const minutes = Math.floor(milliseconds / 60000);
+    const seconds = Math.floor((milliseconds % 60000) / 1000);
+    const ms = Math.floor((milliseconds % 1000) / 10);
+    
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
+  };
 
   // Fetch photo and characters data
   useEffect(() => {
@@ -59,6 +88,9 @@ const GamePage = () => {
 
         // Start a new game session
         await startGameSession();
+        
+        // Start the timer
+        setIsRunning(true);
       } catch (err) {
         console.error('Error fetching game data:', err);
         setError(`Failed to load game data: ${err.message}`);
@@ -95,6 +127,32 @@ const GamePage = () => {
     } catch (error) {
       console.error('Error starting game session:', error);
       setError(`Failed to start game session: ${error.message}`);
+    }
+  };
+
+  // Submit score when game is complete
+  const submitScore = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/scores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          gameSessionId,
+          playerName
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to submit score: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('Score submitted successfully:', result);
+    } catch (error) {
+      console.error('Error submitting score:', error);
+      setError(`Failed to submit score: ${error.message}`);
     }
   };
 
@@ -151,9 +209,9 @@ const GamePage = () => {
         },
         body: JSON.stringify({
           gameSessionId,
-          characterId: character.id,
-          x: targetingBox.clickedX,
-          y: targetingBox.clickedY
+          characterName: character.name,
+          clickX_percent: targetingBox.clickedX,
+          clickY_percent: targetingBox.clickedY
         }),
       });
       
@@ -165,10 +223,10 @@ const GamePage = () => {
           id: character.id,
           name: character.name,
           imageUrl: character.image_url,
-          x_percent: result.boundingBox.x,
-          y_percent: result.boundingBox.y,
-          width_percent: result.boundingBox.width,
-          height_percent: result.boundingBox.height
+          x1_percent: result.x1_percent,
+          y1_percent: result.y1_percent,
+          x2_percent: result.x2_percent,
+          y2_percent: result.y2_percent
         };
         
         setFoundCharacters(prev => [...prev, foundCharacter]);
@@ -179,10 +237,12 @@ const GamePage = () => {
         // Show success feedback
         showFeedback(`Found ${character.name}!`, true);
         
-        // Check if all characters are found
-        if (charactersToFind.length - 1 === 0) {
-          // TODO: Handle game completion
-          alert('Congratulations! You found all characters!');
+        // Check if game is complete
+        if (result.isGameComplete) {
+          setIsGameComplete(true);
+          setIsRunning(false);
+          showFeedback('Game Complete!', true);
+          submitScore();
         }
       } else {
         // Incorrect selection
@@ -252,10 +312,23 @@ const GamePage = () => {
         <div className={styles.playerInfo}>
           <span>Player: {playerName}</span>
         </div>
-        <div className={styles.timer}>00:00</div>
+        <div className={styles.timer}>{formatTime(timeElapsed)}</div>
       </header>
       
       <main className={styles.gameContent}>
+        {isGameComplete && (
+          <div className={styles.gameCompleteOverlay}>
+            <div className={styles.gameCompleteMessage}>
+              <h2>Game Over!</h2>
+              <p>Congratulations, {playerName}!</p>
+              <p>You found all characters in {formatTime(timeElapsed)}</p>
+              <button className={styles.backButton} onClick={handleBackToSelection}>
+                Play Again
+              </button>
+            </div>
+          </div>
+        )}
+        
         <div className={styles.gameImageContainer} ref={gameImageContainerRef}>
           {currentPhoto && (
             <img 
@@ -270,16 +343,16 @@ const GamePage = () => {
           {foundCharacters.map(character => (
             <Marker 
               key={character.id}
-              x_percent={character.x_percent}
-              y_percent={character.y_percent}
-              width_percent={character.width_percent}
-              height_percent={character.height_percent}
-              imageUrl={character.imageUrl}
+              x1_percent={character.x1_percent}
+              y1_percent={character.y1_percent}
+              x2_percent={character.x2_percent}
+              y2_percent={character.y2_percent}
+              name={character.name}
               containerRef={gameImageContainerRef}
             />
           ))}
           
-          {targetingBox.isVisible && (
+          {targetingBox.isVisible && !isGameComplete && (
             <>
               <div 
                 className={styles.targetingBox}
