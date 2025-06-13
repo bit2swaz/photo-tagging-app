@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from '../styles/HowToPlayPage.module.css';
 
 const HowToPlayPage = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Trigger entrance animation after component mount
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
   return (
-    <div className={styles.howToPlayContainer}>
+    <div className={`${styles.howToPlayContainer} ${isVisible ? styles.visible : ''}`}>
       <h1 className={styles.title}>How to Play</h1>
       
       <div className={styles.instructionsContainer}>
@@ -88,10 +99,10 @@ const HowToPlayPage = () => {
         <p>
           Stuck on finding a particular character? Don't worry! Our hint system can help:
         </p>
-        <ul style={{ marginTop: '0.5rem', marginLeft: '2rem' }}>
-          <li>Click the "Hint" button to highlight a general area where a character might be hiding.</li>
-          <li>Hints are limited, so use them wisely!</li>
-          <li>Using hints will add a small time penalty to your final score.</li>
+        <ul>
+          <li>Click the "Hint" button to get help finding a character.</li>
+          <li>The hint will show you the character's name and icon.</li>
+          <li>Use hints wisely to improve your gameplay experience!</li>
         </ul>
       </div>
       

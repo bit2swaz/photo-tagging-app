@@ -9,6 +9,16 @@ const PlayGameStartPage = () => {
   const [maps, setMaps] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Trigger entrance animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   // Fetch maps from backend
   useEffect(() => {
@@ -94,7 +104,7 @@ const PlayGameStartPage = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${isVisible ? styles.visible : ''}`}>
       <h1 className={styles.title}>Game Setup</h1>
 
       {/* Player Name Section */}
@@ -126,7 +136,7 @@ const PlayGameStartPage = () => {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Choose Your Map</h2>
         
-        {isLoading && <p>Loading maps...</p>}
+        {isLoading && <p className={styles.loadingText}>Loading maps...</p>}
         
         {error && (
           <div className={styles.errorMessage}>

@@ -1,17 +1,47 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import '../styles/NavBar.css';
+import { Link, NavLink } from 'react-router-dom';
+import styles from '../styles/NavBar.module.css';
 
 const NavBar = () => {
   return (
-    <nav className="navbar">
-      <div className="logo">
-        <Link to="/">Photo Tagging App</Link>
+    <nav className={styles.navbar}>
+      <div className={styles.logo}>
+        <Link to="/">
+          <span className={styles.logoText}>Photo Tagging Game</span>
+        </Link>
       </div>
-      <ul className="nav-links">
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/how-to-play">How to Play</Link></li>
-        <li><Link to="/play">Play Game</Link></li>
+      <ul className={styles.navLinks}>
+        <li>
+          <NavLink 
+            to="/" 
+            className={({ isActive }) => 
+              isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+            }
+            end
+          >
+            Home
+          </NavLink>
+        </li>
+        <li>
+          <NavLink 
+            to="/how-to-play" 
+            className={({ isActive }) => 
+              isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+            }
+          >
+            How to Play
+          </NavLink>
+        </li>
+        <li>
+          <NavLink 
+            to="/play" 
+            className={({ isActive }) => 
+              isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+            }
+          >
+            Play Game
+          </NavLink>
+        </li>
       </ul>
     </nav>
   );
