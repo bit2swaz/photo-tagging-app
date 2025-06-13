@@ -43,6 +43,10 @@ const GamePage = () => {
   const [showHint, setShowHint] = useState(false);
   const [isHintLoading, setIsHintLoading] = useState(false);
   
+  // Animation states
+  const [lastAttemptedCharacter, setLastAttemptedCharacter] = useState(null);
+  const [lastAttemptResult, setLastAttemptResult] = useState(null); // 'correct', 'incorrect', or null
+  
   // Audio state
   const [isMuted, setIsMuted] = useState(false);
   
@@ -86,6 +90,22 @@ const GamePage = () => {
     if (gameEndSoundRef.current) gameEndSoundRef.current.muted = isMuted;
     if (bgMusicRef.current) bgMusicRef.current.muted = isMuted;
   }, [isMuted]);
+
+  // Reset animation state after a delay
+  useEffect(() => {
+    let animationTimer;
+    
+    if (lastAttemptResult) {
+      animationTimer = setTimeout(() => {
+        setLastAttemptResult(null);
+        setLastAttemptedCharacter(null);
+      }, 2000); // Clear animation after 2 seconds
+    }
+    
+    return () => {
+      if (animationTimer) clearTimeout(animationTimer);
+    };
+  }, [lastAttemptResult]);
 
   // Play sound helper function
   const playSound = (soundRef) => {
@@ -361,6 +381,9 @@ const GamePage = () => {
       await startGameSession();
     }
 
+    // Set the attempted character for animation
+    setLastAttemptedCharacter(character);
+
     try {
       // Send validation request to server
       const response = await fetch('http://localhost:3000/api/game/validate', {
@@ -381,6 +404,9 @@ const GamePage = () => {
       if (result.isCorrect) {
         // Play correct sound
         playSound(correctSoundRef);
+        
+        // Set animation state
+        setLastAttemptResult('correct');
         
         // Add character to found characters with bounding box information
         const foundCharacter = {
@@ -420,6 +446,9 @@ const GamePage = () => {
       } else {
         // Play incorrect sound
         playSound(incorrectSoundRef);
+        
+        // Set animation state
+        setLastAttemptResult('incorrect');
         
         // Incorrect selection
         showFeedback('Try again!', false);
@@ -664,7 +693,7 @@ const GamePage = () => {
                   {charactersToFind.map(character => (
                     <div 
                       key={character.id} 
-                      className={styles.characterItem}
+                      className={`${styles.characterItem} ${lastAttemptedCharacter?.id === character.id && lastAttemptResult === 'incorrect' ? styles.incorrectAttempt : ''}`}
                     >
                       <img 
                         src={character.image_url}
@@ -672,6 +701,11 @@ const GamePage = () => {
                         className={styles.characterIcon}
                       />
                       <span className={styles.characterName}>{character.name}</span>
+                      
+                      {/* Incorrect attempt indicator */}
+                      {lastAttemptedCharacter?.id === character.id && lastAttemptResult === 'incorrect' && (
+                        <span className={styles.incorrectIndicator}>✗</span>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -697,7 +731,7 @@ const GamePage = () => {
                   {foundCharacters.map(character => (
                     <div 
                       key={character.id} 
-                      className={`${styles.characterItem} ${styles.foundCharacterItem}`}
+                      className={`${styles.characterItem} ${styles.foundCharacterItem} ${lastAttemptedCharacter?.id === character.id && lastAttemptResult === 'correct' ? styles.correctAttempt : ''}`}
                     >
                       <img 
                         src={character.imageUrl}
@@ -706,6 +740,11 @@ const GamePage = () => {
                       />
                       <span className={styles.characterName}>{character.name}</span>
                       <span className={styles.foundCheckmark}>✓</span>
+                      
+                      {/* Correct attempt indicator */}
+                      {lastAttemptedCharacter?.id === character.id && lastAttemptResult === 'correct' && (
+                        <span className={styles.correctIndicator}>FOUND!</span>
+                      )}
                     </div>
                   ))}
                 </div>

@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import styles from '../styles/Marker.module.css';
 
 const Marker = ({ 
-  x_percent, 
-  y_percent, 
-  width_percent, 
-  height_percent, 
-  imageUrl,
+  x1_percent, 
+  y1_percent, 
+  x2_percent, 
+  y2_percent, 
+  name,
   containerRef 
 }) => {
   const [dimensions, setDimensions] = useState({
@@ -27,10 +27,10 @@ const Marker = ({
       
       // Convert percentages to pixels based on current container dimensions
       setDimensions({
-        left: (x_percent / 100) * containerWidth,
-        top: (y_percent / 100) * containerHeight,
-        width: (width_percent / 100) * containerWidth,
-        height: (height_percent / 100) * containerHeight
+        left: (x1_percent / 100) * containerWidth,
+        top: (y1_percent / 100) * containerHeight,
+        width: ((x2_percent - x1_percent) / 100) * containerWidth,
+        height: ((y2_percent - y1_percent) / 100) * containerHeight
       });
     };
 
@@ -43,7 +43,7 @@ const Marker = ({
     return () => {
       window.removeEventListener('resize', updatePosition);
     };
-  }, [x_percent, y_percent, width_percent, height_percent, containerRef]);
+  }, [x1_percent, y1_percent, x2_percent, y2_percent, containerRef]);
 
   return (
     <div 
@@ -55,11 +55,9 @@ const Marker = ({
         height: `${dimensions.height}px`
       }}
     >
-      <img 
-        src={imageUrl} 
-        alt="Found character" 
-        className={styles.characterIcon}
-      />
+      <div className={styles.characterIcon}>
+        {name.charAt(0)}
+      </div>
     </div>
   );
 };
