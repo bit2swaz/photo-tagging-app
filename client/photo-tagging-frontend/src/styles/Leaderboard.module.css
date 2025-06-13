@@ -1,0 +1,130 @@
+.leaderboardContainer {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.leaderboardTitle {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.loadingMessage,
+.errorMessage,
+.emptyMessage {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.1rem;
+}
+
+.errorMessage {
+  color: #d32f2f;
+}
+
+.emptyMessage {
+  color: #666;
+  font-style: italic;
+}
+
+.leaderboardTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboardTable th,
+.leaderboardTable td {
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.leaderboardTable th {
+  background-color: #f8f8f8;
+  font-weight: 600;
+  color: #333;
+  position: sticky;
+  top: 0;
+}
+
+.leaderboardRow:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.leaderboardRow:hover {
+  background-color: #f0f0f0;
+}
+
+.rankColumn {
+  width: 10%;
+}
+
+.playerColumn {
+  width: 35%;
+}
+
+.timeColumn {
+  width: 25%;
+}
+
+.dateColumn {
+  width: 30%;
+}
+
+.rankCell {
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Top 3 styling */
+.leaderboardRow:nth-child(1) .rankCell {
+  color: gold;
+  font-size: 1.2rem;
+}
+
+.leaderboardRow:nth-child(2) .rankCell {
+  color: silver;
+  font-size: 1.1rem;
+}
+
+.leaderboardRow:nth-child(3) .rankCell {
+  color: #cd7f32; /* bronze */
+  font-size: 1.05rem;
+}
+
+.timeCell {
+  font-family: monospace;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 600px) {
+  .leaderboardContainer {
+    padding: 15px;
+    border-radius: 6px;
+  }
+  
+  .leaderboardTable th,
+  .leaderboardTable td {
+    padding: 8px 4px;
+    font-size: 0.9rem;
+  }
+  
+  .dateColumn {
+    display: none;
+  }
+  
+  .playerColumn {
+    width: 50%;
+  }
+  
+  .timeColumn {
+    width: 30%;
+  }
+} 

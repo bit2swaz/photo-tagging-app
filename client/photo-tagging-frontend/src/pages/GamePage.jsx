@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styles from '../styles/GamePage.module.css';
 import CharacterSelectionList from '../components/CharacterSelectionList';
 import Marker from '../components/Marker';
+import Leaderboard from '../components/Leaderboard';
 
 const GamePage = () => {
   const location = useLocation();
@@ -325,6 +326,11 @@ const GamePage = () => {
               <button className={styles.backButton} onClick={handleBackToSelection}>
                 Play Again
               </button>
+              
+              {/* Display leaderboard when game is complete */}
+              <div className={styles.leaderboardSection}>
+                <Leaderboard photoId={currentPhoto?.id} />
+              </div>
             </div>
           </div>
         )}
