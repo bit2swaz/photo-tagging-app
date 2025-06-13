@@ -107,89 +107,108 @@ const PlayGameStartPage = () => {
     <div className={`${styles.container} ${isVisible ? styles.visible : ''}`}>
       <h1 className={styles.title}>Game Setup</h1>
 
-      {/* Player Name Section */}
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Player Name</h2>
-        <div className={styles.nameInputContainer}>
-          <div className={styles.inputGroup}>
-            <input
-              type="text"
-              className={styles.nameInput}
-              placeholder="Enter your name"
-              value={playerName}
-              onChange={handleNameChange}
-            />
-            <button 
-              className={styles.guestButton}
-              onClick={handlePlayAsGuest}
-            >
-              Play as Guest
-            </button>
-          </div>
-          {playerName && (
-            <p>You'll play as: <strong>{playerName}</strong></p>
-          )}
-        </div>
-      </section>
-
-      {/* Map Selection Section */}
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Choose Your Map</h2>
-        
-        {isLoading && <p className={styles.loadingText}>Loading maps...</p>}
-        
-        {error && (
-          <div className={styles.errorMessage}>
-            <p>{error}</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className={styles.retryButton}
-            >
-              Retry
-            </button>
-          </div>
-        )}
-        
-        {!isLoading && !error && maps.length === 0 && (
-          <p>No maps available. Please check back later.</p>
-        )}
-        
-        {!isLoading && !error && maps.length > 0 && (
-          <div className={styles.difficultyOptions}>
-            {maps.map((map) => (
-              <div
-                key={map.id}
-                className={`${styles.difficultyCard} ${selectedMapId === map.id ? styles.selected : ''}`}
-                onClick={() => handleMapSelect(map.id)}
+      <div className={styles.gameSetupWrapper}>
+        {/* Player Name Section */}
+        <section className={`${styles.section} ${styles.playerSection}`}>
+          <h2 className={styles.sectionTitle}>Player Name</h2>
+          <div className={styles.nameInputContainer}>
+            <div className={styles.inputGroup}>
+              <input
+                type="text"
+                className={styles.nameInput}
+                placeholder="Enter your name"
+                value={playerName}
+                onChange={handleNameChange}
+              />
+              <button 
+                className={styles.guestButton}
+                onClick={handlePlayAsGuest}
               >
-                <img
-                  src={map.image_url}
-                  alt={map.name}
-                  className={styles.cardImage}
-                />
-                <div className={styles.cardContent}>
-                  <h3 className={styles.cardTitle}>{map.name}</h3>
-                  <p className={styles.cardDescription}>{map.difficulty} Difficulty</p>
-                  <div className={styles.cardInfo}>
-                    <span>{getCharacterCount(map.difficulty)} characters</span>
-                    <span>~{getEstimatedTime(map.difficulty)}</span>
+                Play as Guest
+              </button>
+            </div>
+            {playerName && (
+              <p className={styles.playerConfirmation}>You'll play as: <strong>{playerName}</strong></p>
+            )}
+          </div>
+        </section>
+
+        {/* Map Selection Section */}
+        <section className={`${styles.section} ${styles.mapSection}`}>
+          <h2 className={styles.sectionTitle}>Choose Your Map</h2>
+          
+          {isLoading && <p className={styles.loadingText}>Loading maps...</p>}
+          
+          {error && (
+            <div className={styles.errorMessage}>
+              <p>{error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className={styles.retryButton}
+              >
+                Retry
+              </button>
+            </div>
+          )}
+          
+          {!isLoading && !error && maps.length === 0 && (
+            <p>No maps available. Please check back later.</p>
+          )}
+          
+          {!isLoading && !error && maps.length > 0 && (
+            <div className={styles.difficultyOptions}>
+              {maps.map((map) => (
+                <div
+                  key={map.id}
+                  className={`${styles.difficultyCard} ${selectedMapId === map.id ? styles.selected : ''}`}
+                  onClick={() => handleMapSelect(map.id)}
+                >
+                  <div className={styles.cardImageContainer}>
+                    <img
+                      src={map.image_url}
+                      alt={map.name}
+                      className={styles.cardImage}
+                    />
+                    {selectedMapId === map.id && (
+                      <div className={styles.selectedOverlay}>
+                        <div className={styles.checkmark}>✓</div>
+                      </div>
+                    )}
+                  </div>
+                  <div className={styles.cardContent}>
+                    <h3 className={styles.cardTitle}>{map.name}</h3>
+                    <div className={styles.difficultyBadge} data-difficulty={map.difficulty.toLowerCase()}>
+                      {map.difficulty} Difficulty
+                    </div>
+                    <div className={styles.cardInfo}>
+                      <span><strong>{getCharacterCount(map.difficulty)}</strong> characters</span>
+                      <span>~{getEstimatedTime(map.difficulty)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
 
       {/* Start Game Button */}
       <div className={styles.startButtonContainer}>
         <button
-          className={styles.startButton}
+          className={`${styles.startButton} ${isStartButtonDisabled ? '' : styles.startButtonEnabled}`}
           disabled={isStartButtonDisabled}
           onClick={handleStartGame}
         >
-          Start Game
+          <span className={styles.buttonText}>Start Game</span>
+          <span className={styles.buttonIcon}>▶</span>
         </button>
+        {isStartButtonDisabled && (
+          <p className={styles.startButtonHint}>
+            {!playerName && !selectedMapId && "Enter your name and select a map to start"}
+            {!playerName && selectedMapId && "Enter your name to start"}
+            {playerName && !selectedMapId && "Select a map to start"}
+          </p>
+        )}
       </div>
     </div>
   );
