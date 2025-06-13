@@ -40,6 +40,13 @@ const GamePage = () => {
     clickedY: 0
   });
 
+  // Calculate progress percentage
+  const progressPercentage = () => {
+    if (!charactersToFind.length && !foundCharacters.length) return 0;
+    const total = charactersToFind.length + foundCharacters.length;
+    return Math.round((foundCharacters.length / total) * 100);
+  };
+
   // Countdown effect
   useEffect(() => {
     let countdownInterval;
@@ -59,7 +66,7 @@ const GamePage = () => {
     };
   }, [showCountdown, countdown]);
 
-  // Timer effect
+  // Game timer effect
   useEffect(() => {
     let interval;
     
@@ -354,6 +361,19 @@ const GamePage = () => {
       </header>
       
       <main className={styles.gameContent}>
+        {/* Progress bar */}
+        <div className={styles.progressContainer}>
+          <div className={styles.progressText}>
+            {foundCharacters.length} / {charactersToFind.length + foundCharacters.length} Characters Found
+          </div>
+          <div className={styles.progressBar}>
+            <div 
+              className={styles.progressFill} 
+              style={{ width: `${progressPercentage()}%` }}
+            ></div>
+          </div>
+        </div>
+
         {isGameComplete && (
           <div className={styles.gameCompleteOverlay}>
             <div className={styles.gameCompleteMessage}>
@@ -382,137 +402,144 @@ const GamePage = () => {
           </div>
         )}
         
-        <div className={styles.gameImageContainer} ref={gameImageContainerRef}>
-          {currentPhoto && (
-            <img 
-              src={currentPhoto.image_url} 
-              alt={currentPhoto.name}
-              className={`${styles.gameImage} ${showCountdown ? styles.gameImageDimmed : ''}`}
-              onClick={handleImageClick}
-            />
-          )}
-          
-          {/* Debug mode bounding boxes */}
-          {debugMode && !showCountdown && charactersToFind.map(character => (
-            <div
-              key={`debug-${character.id}`}
-              className={styles.debugBox}
-              style={{
-                left: `${character.x1_percent}%`,
-                top: `${character.y1_percent}%`,
-                width: `${character.x2_percent - character.x1_percent}%`,
-                height: `${character.y2_percent - character.y1_percent}%`
-              }}
-            >
-              <span className={styles.debugLabel}>{character.name}</span>
-            </div>
-          ))}
-          
-          {/* Render markers for found characters */}
-          {!showCountdown && foundCharacters.map(character => (
-            <Marker 
-              key={character.id}
-              x1_percent={character.x1_percent}
-              y1_percent={character.y1_percent}
-              x2_percent={character.x2_percent}
-              y2_percent={character.y2_percent}
-              name={character.name}
-              containerRef={gameImageContainerRef}
-            />
-          ))}
-          
-          {/* Debug mode bounding boxes for found characters */}
-          {debugMode && !showCountdown && foundCharacters.map(character => (
-            <div
-              key={`debug-found-${character.id}`}
-              className={`${styles.debugBox} ${styles.debugBoxFound}`}
-              style={{
-                left: `${character.x1_percent}%`,
-                top: `${character.y1_percent}%`,
-                width: `${character.x2_percent - character.x1_percent}%`,
-                height: `${character.y2_percent - character.y1_percent}%`
-              }}
-            >
-              <span className={styles.debugLabel}>{character.name} (Found)</span>
-            </div>
-          ))}
-          
-          {targetingBox.isVisible && !isGameComplete && !showCountdown && (
-            <>
-              <div 
-                className={styles.targetingBox}
-                style={{ 
-                  left: `${targetingBox.x}px`, 
-                  top: `${targetingBox.y}px` 
+        <div className={styles.gameArea}>
+          <div className={styles.gameImageContainer} ref={gameImageContainerRef}>
+            {currentPhoto && (
+              <img 
+                src={currentPhoto.image_url} 
+                alt={currentPhoto.name}
+                className={`${styles.gameImage} ${showCountdown ? styles.gameImageDimmed : ''}`}
+                onClick={handleImageClick}
+              />
+            )}
+            
+            {/* Debug mode bounding boxes */}
+            {debugMode && !showCountdown && charactersToFind.map(character => (
+              <div
+                key={`debug-${character.id}`}
+                className={styles.debugBox}
+                style={{
+                  left: `${character.x1_percent}%`,
+                  top: `${character.y1_percent}%`,
+                  width: `${character.x2_percent - character.x1_percent}%`,
+                  height: `${character.y2_percent - character.y1_percent}%`
                 }}
               >
-                <div className={styles.targetingCrosshair}></div>
+                <span className={styles.debugLabel}>{character.name}</span>
               </div>
-              
-              <CharacterSelectionList 
-                characters={charactersToFind}
-                onSelectCharacter={handleSelectCharacter}
-                position={{ 
-                  x: targetingBox.x + 30, 
-                  y: targetingBox.y + 30 
-                }}
-                foundCharacters={foundCharacters.map(c => c.id)}
+            ))}
+            
+            {/* Render markers for found characters */}
+            {!showCountdown && foundCharacters.map(character => (
+              <Marker 
+                key={character.id}
+                x1_percent={character.x1_percent}
+                y1_percent={character.y1_percent}
+                x2_percent={character.x2_percent}
+                y2_percent={character.y2_percent}
+                name={character.name}
+                containerRef={gameImageContainerRef}
               />
-            </>
-          )}
+            ))}
+            
+            {/* Debug mode bounding boxes for found characters */}
+            {debugMode && !showCountdown && foundCharacters.map(character => (
+              <div
+                key={`debug-found-${character.id}`}
+                className={`${styles.debugBox} ${styles.debugBoxFound}`}
+                style={{
+                  left: `${character.x1_percent}%`,
+                  top: `${character.y1_percent}%`,
+                  width: `${character.x2_percent - character.x1_percent}%`,
+                  height: `${character.y2_percent - character.y1_percent}%`
+                }}
+              >
+                <span className={styles.debugLabel}>{character.name} (Found)</span>
+              </div>
+            ))}
+            
+            {targetingBox.isVisible && !isGameComplete && !showCountdown && (
+              <>
+                <div 
+                  className={styles.targetingBox}
+                  style={{ 
+                    left: `${targetingBox.x}px`, 
+                    top: `${targetingBox.y}px` 
+                  }}
+                >
+                  <div className={styles.targetingCrosshair}></div>
+                </div>
+                
+                <CharacterSelectionList 
+                  characters={charactersToFind}
+                  onSelectCharacter={handleSelectCharacter}
+                  position={{ 
+                    x: targetingBox.x + 30, 
+                    y: targetingBox.y + 30 
+                  }}
+                  foundCharacters={foundCharacters.map(c => c.id)}
+                />
+              </>
+            )}
+            
+            {/* Feedback message */}
+            {feedback.isVisible && !showCountdown && (
+              <div 
+                className={`${styles.feedbackMessage} ${feedback.isSuccess ? styles.successFeedback : styles.errorFeedback}`}
+              >
+                {feedback.message}
+              </div>
+            )}
+          </div>
           
-          {/* Feedback message */}
-          {feedback.isVisible && !showCountdown && (
-            <div 
-              className={`${styles.feedbackMessage} ${feedback.isSuccess ? styles.successFeedback : styles.errorFeedback}`}
-            >
-              {feedback.message}
+          <div className={styles.charactersSidebar}>
+            <div className={styles.charactersSection}>
+              <h3 className={styles.charactersTitle}>Characters to Find</h3>
+              {charactersToFind.length === 0 && foundCharacters.length > 0 ? (
+                <div className={styles.allFoundMessage}>All characters found!</div>
+              ) : (
+                <div className={styles.charactersList}>
+                  {charactersToFind.map(character => (
+                    <div 
+                      key={character.id} 
+                      className={styles.characterItem}
+                    >
+                      <img 
+                        src={character.image_url}
+                        alt={character.name}
+                        className={styles.characterIcon}
+                      />
+                      <span className={styles.characterName}>{character.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+            
+            {/* Found Characters Section */}
+            {foundCharacters.length > 0 && (
+              <div className={styles.charactersSection}>
+                <h3 className={styles.charactersTitle}>Found Characters</h3>
+                <div className={styles.charactersList}>
+                  {foundCharacters.map(character => (
+                    <div 
+                      key={character.id} 
+                      className={`${styles.characterItem} ${styles.foundCharacterItem}`}
+                    >
+                      <img 
+                        src={character.imageUrl}
+                        alt={character.name}
+                        className={styles.characterIcon}
+                      />
+                      <span className={styles.characterName}>{character.name}</span>
+                      <span className={styles.foundCheckmark}>✓</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-        
-        {charactersToFind.length > 0 && (
-          <div className={styles.charactersPanel}>
-            <h3 className={styles.charactersTitle}>Characters to Find</h3>
-            <div className={styles.charactersList}>
-              {charactersToFind.map(character => (
-                <div 
-                  key={character.id} 
-                  className={styles.characterItem}
-                >
-                  <img 
-                    src={character.image_url}
-                    alt={character.name}
-                    className={styles.characterIcon}
-                  />
-                  <span className={styles.characterName}>{character.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {/* Found Characters Section */}
-        {foundCharacters.length > 0 && (
-          <div className={styles.foundCharactersPanel}>
-            <h3 className={styles.charactersTitle}>Found Characters</h3>
-            <div className={styles.charactersList}>
-              {foundCharacters.map(character => (
-                <div 
-                  key={character.id} 
-                  className={`${styles.characterItem} ${styles.foundCharacterItem}`}
-                >
-                  <img 
-                    src={character.imageUrl}
-                    alt={character.name}
-                    className={styles.characterIcon}
-                  />
-                  <span className={styles.characterName}>{character.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );
