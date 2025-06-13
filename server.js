@@ -229,6 +229,50 @@ app.post('/api/game/validate', async (req, res) => {
   }
 });
 
+// Score submission endpoint
+app.post('/api/scores', async (req, res) => {
+  try {
+    const { gameSessionId, playerName } = req.body;
+    
+    // Validate inputs
+    if (!gameSessionId || typeof gameSessionId !== 'string') {
+      return res.status(400).json({ error: 'Valid game session ID is required.' });
+    }
+    
+    if (!playerName || typeof playerName !== 'string' || playerName.trim() === '') {
+      return res.status(400).json({ error: 'Player name is required.' });
+    }
+    
+    // Retrieve the game session
+    const gameSession = activeGameSessions.get(gameSessionId);
+    if (!gameSession) {
+      return res.status(404).json({ error: 'Game session not found. The session may have expired.' });
+    }
+    
+    // Calculate time taken
+    const time_taken_ms = Date.now() - gameSession.startTime;
+    
+    // Save score to database
+    await query(
+      'INSERT INTO scores (photo_id, player_name, time_taken_ms) VALUES ($1, $2, $3)',
+      [gameSession.photoId, playerName, time_taken_ms]
+    );
+    
+    // Delete the game session as it's completed
+    activeGameSessions.delete(gameSessionId);
+    
+    // Return success response
+    res.status(201).json({
+      message: 'Score saved successfully',
+      timeTaken: time_taken_ms
+    });
+    
+  } catch (error) {
+    console.error('Error saving score:', error);
+    res.status(500).json({ error: 'Failed to save score' });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
