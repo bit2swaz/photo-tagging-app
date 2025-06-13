@@ -303,6 +303,59 @@ app.get('/api/scores/:photoId/leaderboard', async (req, res) => {
   }
 });
 
+// Hint endpoint
+app.get('/api/game/:gameSessionId/hint', async (req, res) => {
+  try {
+    const { gameSessionId } = req.params;
+    
+    // Validate input
+    if (!gameSessionId || typeof gameSessionId !== 'string') {
+      return res.status(400).json({ error: 'Valid game session ID is required.' });
+    }
+    
+    // Retrieve the game session
+    const gameSession = activeGameSessions.get(gameSessionId);
+    if (!gameSession) {
+      return res.status(404).json({ error: 'Game session not found. The session may have expired.' });
+    }
+    
+    // Fetch all characters for the photo
+    const characters = await query(
+      'SELECT id, name, image_url FROM characters WHERE photo_id = $1',
+      [gameSession.photoId]
+    );
+    
+    // Filter out characters that have already been found
+    const unfoundCharacters = characters.filter(
+      character => !gameSession.foundCharacters.includes(character.id)
+    );
+    
+    // Check if there are any unfound characters
+    if (unfoundCharacters.length === 0) {
+      return res.json({ 
+        message: 'All characters have been found!',
+        hint: null
+      });
+    }
+    
+    // Randomly select one unfound character
+    const randomIndex = Math.floor(Math.random() * unfoundCharacters.length);
+    const hintCharacter = unfoundCharacters[randomIndex];
+    
+    // Return the hint
+    res.json({
+      hint: {
+        characterName: hintCharacter.name,
+        characterIconUrl: hintCharacter.image_url
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error generating hint:', error);
+    res.status(500).json({ error: 'Failed to generate hint' });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
