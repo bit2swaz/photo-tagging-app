@@ -1,0 +1,133 @@
+.howToPlayContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: calc(100vh - 60px); /* Adjust based on navbar height */
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid #764ba2;
+}
+
+.instructionsContainer {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.stepsList {
+  list-style-position: inside;
+  padding-left: 1rem;
+}
+
+.stepItem {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: flex-start;
+}
+
+.stepNumber {
+  background-color: #764ba2;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.stepContent {
+  flex: 1;
+}
+
+.stepTitle {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+.stepDescription {
+  color: #555;
+  line-height: 1.6;
+}
+
+.hintSection {
+  background-color: #fffde7;
+  border-left: 4px solid #ffd600;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  border-radius: 0 10px 10px 0;
+}
+
+.hintTitle {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.hintIcon {
+  margin-right: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.buttonsContainer {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.button {
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.primaryButton {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.secondaryButton {
+  background-color: #764ba2;
+  color: white;
+}
+
+.button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .howToPlayContainer {
+    padding: 1.5rem;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .buttonsContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+} 
