@@ -24,6 +24,9 @@ const GamePage = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [isGameComplete, setIsGameComplete] = useState(false);
   
+  // Debug mode state
+  const [debugMode, setDebugMode] = useState(false);
+  
   // Targeting box state
   const [targetingBox, setTargetingBox] = useState({
     isVisible: false,
@@ -55,6 +58,11 @@ const GamePage = () => {
     const ms = Math.floor((milliseconds % 1000) / 10);
     
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
+  };
+
+  // Toggle debug mode
+  const toggleDebugMode = () => {
+    setDebugMode(prevMode => !prevMode);
   };
 
   // Fetch photo and characters data
@@ -312,6 +320,12 @@ const GamePage = () => {
       <header className={styles.gameHeader}>
         <div className={styles.playerInfo}>
           <span>Player: {playerName}</span>
+          <button 
+            className={`${styles.debugButton} ${debugMode ? styles.debugActive : ''}`} 
+            onClick={toggleDebugMode}
+          >
+            Toggle Debug Boxes
+          </button>
         </div>
         <div className={styles.timer}>{formatTime(timeElapsed)}</div>
       </header>
@@ -345,6 +359,22 @@ const GamePage = () => {
             />
           )}
           
+          {/* Debug mode bounding boxes */}
+          {debugMode && charactersToFind.map(character => (
+            <div
+              key={`debug-${character.id}`}
+              className={styles.debugBox}
+              style={{
+                left: `${character.x1_percent}%`,
+                top: `${character.y1_percent}%`,
+                width: `${character.x2_percent - character.x1_percent}%`,
+                height: `${character.y2_percent - character.y1_percent}%`
+              }}
+            >
+              <span className={styles.debugLabel}>{character.name}</span>
+            </div>
+          ))}
+          
           {/* Render markers for found characters */}
           {foundCharacters.map(character => (
             <Marker 
@@ -356,6 +386,22 @@ const GamePage = () => {
               name={character.name}
               containerRef={gameImageContainerRef}
             />
+          ))}
+          
+          {/* Debug mode bounding boxes for found characters */}
+          {debugMode && foundCharacters.map(character => (
+            <div
+              key={`debug-found-${character.id}`}
+              className={`${styles.debugBox} ${styles.debugBoxFound}`}
+              style={{
+                left: `${character.x1_percent}%`,
+                top: `${character.y1_percent}%`,
+                width: `${character.x2_percent - character.x1_percent}%`,
+                height: `${character.y2_percent - character.y1_percent}%`
+              }}
+            >
+              <span className={styles.debugLabel}>{character.name} (Found)</span>
+            </div>
           ))}
           
           {targetingBox.isVisible && !isGameComplete && (
