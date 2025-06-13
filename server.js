@@ -273,6 +273,36 @@ app.post('/api/scores', async (req, res) => {
   }
 });
 
+// Leaderboard endpoint
+app.get('/api/scores/:photoId/leaderboard', async (req, res) => {
+  try {
+    const photoId = parseInt(req.params.photoId);
+    
+    // Validate that photoId is a valid integer
+    if (isNaN(photoId) || photoId <= 0) {
+      return res.status(400).json({ error: 'Invalid photo ID. Must be a positive integer.' });
+    }
+    
+    // Check if the photo exists
+    const photos = await query('SELECT id FROM photos WHERE id = $1', [photoId]);
+    if (photos.length === 0) {
+      return res.status(404).json({ error: 'Photo not found' });
+    }
+    
+    // Fetch leaderboard scores
+    const scores = await query(
+      'SELECT player_name, time_taken_ms, created_at FROM scores WHERE photo_id = $1 ORDER BY time_taken_ms ASC LIMIT 10',
+      [photoId]
+    );
+    
+    res.json(scores);
+    
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    res.status(500).json({ error: 'Failed to fetch leaderboard' });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
