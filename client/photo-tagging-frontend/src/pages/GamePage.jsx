@@ -31,6 +31,11 @@ const GamePage = () => {
   // Debug mode state
   const [debugMode, setDebugMode] = useState(false);
   
+  // Hint system state
+  const [currentHint, setCurrentHint] = useState({ name: '', icon: '' });
+  const [showHint, setShowHint] = useState(false);
+  const [isHintLoading, setIsHintLoading] = useState(false);
+  
   // Targeting box state
   const [targetingBox, setTargetingBox] = useState({
     isVisible: false,
@@ -81,6 +86,21 @@ const GamePage = () => {
     };
   }, [isRunning]);
 
+  // Hide hint after a few seconds
+  useEffect(() => {
+    let hintTimer;
+    
+    if (showHint) {
+      hintTimer = setTimeout(() => {
+        setShowHint(false);
+      }, 5000); // Hide hint after 5 seconds
+    }
+    
+    return () => {
+      if (hintTimer) clearTimeout(hintTimer);
+    };
+  }, [showHint]);
+
   // Format time as MM:SS.ms
   const formatTime = (milliseconds) => {
     const minutes = Math.floor(milliseconds / 60000);
@@ -93,6 +113,41 @@ const GamePage = () => {
   // Toggle debug mode
   const toggleDebugMode = () => {
     setDebugMode(prevMode => !prevMode);
+  };
+
+  // Request a hint
+  const requestHint = async () => {
+    if (!gameSessionId || charactersToFind.length === 0) {
+      showFeedback('No hints available!', false);
+      return;
+    }
+    
+    try {
+      setIsHintLoading(true);
+      const response = await fetch(`http://localhost:3000/api/game/${gameSessionId}/hint`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to get hint: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      if (result.name && result.icon) {
+        setCurrentHint({
+          name: result.name,
+          icon: result.icon
+        });
+        setShowHint(true);
+        showFeedback('Hint received!', true);
+      } else {
+        showFeedback('No hints available!', false);
+      }
+    } catch (error) {
+      console.error('Error getting hint:', error);
+      showFeedback('Failed to get hint', false);
+    } finally {
+      setIsHintLoading(false);
+    }
   };
 
   // Fetch photo and characters data
@@ -402,6 +457,22 @@ const GamePage = () => {
           </div>
         )}
         
+        {/* Hint overlay */}
+        {showHint && !isGameComplete && !showCountdown && (
+          <div className={styles.hintOverlay}>
+            <div className={styles.hintContainer}>
+              <img 
+                src={currentHint.icon} 
+                alt={currentHint.name}
+                className={styles.hintIcon}
+              />
+              <div className={styles.hintText}>
+                Looking for: <strong>{currentHint.name}</strong>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div className={styles.gameArea}>
           <div className={styles.gameImageContainer} ref={gameImageContainerRef}>
             {currentPhoto && (
@@ -513,6 +584,17 @@ const GamePage = () => {
                     </div>
                   ))}
                 </div>
+              )}
+              
+              {/* Hint button */}
+              {!isGameComplete && !showCountdown && charactersToFind.length > 0 && (
+                <button 
+                  className={styles.hintButton}
+                  onClick={requestHint}
+                  disabled={isHintLoading}
+                >
+                  {isHintLoading ? 'Loading...' : 'Get Hint'}
+                </button>
               )}
             </div>
             
