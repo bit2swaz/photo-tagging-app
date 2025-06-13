@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../styles/PlayGameStartPage.module.css';
 
 const PlayGameStartPage = () => {
+  const navigate = useNavigate();
   const [playerName, setPlayerName] = useState('');
   const [selectedMapId, setSelectedMapId] = useState(null);
   const [maps, setMaps] = useState([]);
@@ -82,11 +84,12 @@ const PlayGameStartPage = () => {
 
   // Handle start game button click
   const handleStartGame = () => {
-    // This would typically navigate to the game screen or dispatch an action
-    // For now, we'll just log the selected options
-    console.log('Starting game with:', {
-      playerName,
-      mapId: selectedMapId
+    // Navigate to the game page with the selected map and player name
+    navigate('/play/game', { 
+      state: { 
+        photoId: selectedMapId, 
+        playerName 
+      } 
     });
   };
 

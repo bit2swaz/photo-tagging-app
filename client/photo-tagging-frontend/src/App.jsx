@@ -4,6 +4,7 @@ import NavBar from './components/NavBar'
 import LandingPage from './pages/LandingPage'
 import HowToPlayPage from './pages/HowToPlayPage'
 import PlayGameStartPage from './pages/PlayGameStartPage'
+import GamePage from './pages/GamePage'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/how-to-play" element={<HowToPlayPage />} />
             <Route path="/play" element={<PlayGameStartPage />} />
+            <Route path="/play/game" element={<GamePage />} />
           </Routes>
         </div>
       </div>
