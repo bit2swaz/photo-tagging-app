@@ -31,9 +31,9 @@ async function setupDatabase() {
     const photosResult = await client.query(`
       INSERT INTO photos (name, image_url, difficulty, original_width_px, original_height_px)
       VALUES 
-        ('Forest Adventure', '/images/easy_map.jpg', 'easy', 1000, 750),
-        ('City Chaos', '/images/medium_map.jpg', 'medium', 1200, 800),
-        ('Space Station', '/images/hard_map.jpg', 'hard', 1500, 1000)
+        ('Park Safari', '/images/easy_map_final.png', 'easy', 3327, 4412),
+        ('Pool Party', '/images/medium_map_final.png', 'medium', 3416, 4545),
+        ('Winter Whimsy', '/images/hard_map_final.png', 'hard', 3410, 4545)
       RETURNING id;
     `);
     
@@ -45,33 +45,33 @@ async function setupDatabase() {
     await client.query(`
       INSERT INTO characters (photo_id, name, image_url, x1_percent, y1_percent, x2_percent, y2_percent)
       VALUES 
-        (${photoIds[0]}, 'Waldo', '/icons/waldo_icon.png', 10.00, 15.00, 15.00, 20.00),
-        (${photoIds[0]}, 'Wizard', '/icons/wizard_icon.png', 45.00, 50.00, 50.00, 55.00),
-        (${photoIds[0]}, 'Odlaw', '/icons/odlaw_icon.png', 75.00, 30.00, 80.00, 35.00);
+        (${photoIds[0]}, 'Zebra', '/icons/zebra_easy.png', 10.00, 15.00, 15.00, 20.00),
+        (${photoIds[0]}, 'Hippo', '/icons/hippo_easy.png', 45.00, 50.00, 50.00, 55.00),
+        (${photoIds[0]}, 'Pig', '/icons/pig_easy.png', 75.00, 30.00, 80.00, 35.00);
     `);
 
     // Medium photo (5 characters)
     await client.query(`
       INSERT INTO characters (photo_id, name, image_url, x1_percent, y1_percent, x2_percent, y2_percent)
       VALUES 
-        (${photoIds[1]}, 'Waldo', '/icons/waldo_icon.png', 20.00, 25.00, 25.00, 30.00),
-        (${photoIds[1]}, 'Wizard', '/icons/wizard_icon.png', 55.00, 40.00, 60.00, 45.00),
-        (${photoIds[1]}, 'Odlaw', '/icons/odlaw_icon.png', 85.00, 70.00, 90.00, 75.00),
-        (${photoIds[1]}, 'Wenda', '/icons/wenda_icon.png', 30.00, 60.00, 35.00, 65.00),
-        (${photoIds[1]}, 'Whitebeard', '/icons/whitebeard_icon.png', 65.00, 15.00, 70.00, 20.00);
+        (${photoIds[1]}, 'Crab', '/icons/crab_medium.png', 20.00, 25.00, 25.00, 30.00),
+        (${photoIds[1]}, 'Glass', '/icons/glass_medium.png', 55.00, 40.00, 60.00, 45.00),
+        (${photoIds[1]}, 'Strawberry', '/icons/strawberry_medium.png', 85.00, 70.00, 90.00, 75.00),
+        (${photoIds[1]}, 'Boat', '/icons/boat_medium.png', 30.00, 60.00, 35.00, 65.00),
+        (${photoIds[1]}, 'Whale', '/icons/whale_medium.png', 65.00, 15.00, 70.00, 20.00);
     `);
 
     // Hard photo (7 characters)
     await client.query(`
       INSERT INTO characters (photo_id, name, image_url, x1_percent, y1_percent, x2_percent, y2_percent)
       VALUES 
-        (${photoIds[2]}, 'Waldo', '/icons/waldo_icon.png', 15.00, 35.00, 20.00, 40.00),
-        (${photoIds[2]}, 'Wizard', '/icons/wizard_icon.png', 45.00, 60.00, 50.00, 65.00),
-        (${photoIds[2]}, 'Odlaw', '/icons/odlaw_icon.png', 75.00, 20.00, 80.00, 25.00),
-        (${photoIds[2]}, 'Wenda', '/icons/wenda_icon.png', 25.00, 75.00, 30.00, 80.00),
-        (${photoIds[2]}, 'Whitebeard', '/icons/whitebeard_icon.png', 60.00, 10.00, 65.00, 15.00),
-        (${photoIds[2]}, 'Woof', '/icons/woof_icon.png', 90.00, 45.00, 95.00, 50.00),
-        (${photoIds[2]}, 'Wilma', '/icons/wilma_icon.png', 40.00, 85.00, 45.00, 90.00);
+        (${photoIds[2]}, 'Bell', '/icons/bell_hard.png', 15.00, 35.00, 20.00, 40.00),
+        (${photoIds[2]}, 'Candy Cane', '/icons/candycane_hard.png', 45.00, 60.00, 50.00, 65.00),
+        (${photoIds[2]}, 'Carrot', '/icons/carrot_hard.png', 75.00, 20.00, 80.00, 25.00),
+        (${photoIds[2]}, 'Cup', '/icons/cup_hard.png', 25.00, 75.00, 30.00, 80.00),
+        (${photoIds[2]}, 'Ice Cream', '/icons/icecream_hard.png', 60.00, 10.00, 65.00, 15.00),
+        (${photoIds[2]}, 'Reindeer', '/icons/reindeer_hard.png', 90.00, 45.00, 95.00, 50.00),
+        (${photoIds[2]}, 'Snowflake', '/icons/snowflake_hard.png', 40.00, 85.00, 45.00, 90.00);
     `);
     
     console.log('Sample characters added successfully');
