@@ -158,3 +158,78 @@ VITE_API_BASE_URL=https://your-backend-api.onrender.com
 2. Create a `.env` file with: `VITE_API_BASE_URL=http://localhost:3000`
 3. Run `npm install` to install dependencies
 4. Run `npm run dev` to start the development server
+
+## Deployment Guide
+
+### Database (Supabase)
+
+1. **Create a Supabase Project**:
+   - Sign up for Supabase at https://supabase.com
+   - Create a new project
+   - Go to the SQL Editor and run the schema from `db/db_schema.sql`
+
+2. **Get Connection String**:
+   - Go to Settings > Database
+   - Find your connection string under "Connection Pooling"
+   - It should look like: `postgres://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres`
+   - Make sure special characters in the password are properly URL-encoded (%, &, ?, @ need to be encoded)
+
+### Backend (Render)
+
+1. **Create a New Web Service**:
+   - Sign up for Render at https://render.com
+   - Create a new Web Service
+   - Connect your GitHub repository
+   - Set the build command: `npm install`
+   - Set the start command: `node server.js`
+
+2. **Set Environment Variables**:
+   - Go to Environment tab
+   - Add the following variables:
+     - `DATABASE_URL`: Your Supabase connection string
+     - `NODE_ENV`: `production`
+     - `PORT`: `10000` (or let Render set it automatically)
+
+3. **Deploy**:
+   - Click "Deploy" and wait for the build to complete
+   - Note your service URL (e.g., `https://photo-tagging-api.onrender.com`)
+
+### Frontend (Netlify)
+
+1. **Create a New Site**:
+   - Sign up for Netlify at https://netlify.com
+   - Create a new site from Git
+   - Connect your GitHub repository
+   - Set the build command: `cd client/photo-tagging-frontend && npm install && npm run build`
+   - Set the publish directory: `client/photo-tagging-frontend/dist`
+
+2. **Set Environment Variables**:
+   - Go to Site settings > Build & deploy > Environment
+   - Add the following variable:
+     - `VITE_API_BASE_URL`: Your Render backend URL (e.g., `https://photo-tagging-api.onrender.com`)
+
+3. **Deploy**:
+   - Trigger a new deploy
+   - Your site should be live at a Netlify URL (e.g., `https://photo-tagging-app.netlify.app`)
+
+## Troubleshooting
+
+### Database Connection Issues
+
+If you're seeing 500 errors when trying to access `/api/photos`:
+
+1. **Check Render Logs**:
+   - Go to your Render dashboard > Web Service > Logs
+   - Look for database connection errors
+
+2. **Verify Environment Variables**:
+   - Make sure `DATABASE_URL` is correctly set in Render
+   - Ensure special characters in the password are properly URL-encoded
+
+3. **Database Network Access**:
+   - In Supabase, go to Settings > Database
+   - Under "Connection Pooling", make sure "Enable Pooling" is ON
+   - Check if "Trusted Sources" is restricting access
+
+4. **Test Database Connection**:
+   - Use the `db/check_render_db.js` script locally to test your connection string

@@ -5,22 +5,30 @@ const path = require('path');
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-// Create a new Pool instance with connection string for production or individual params for development
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`,
-  // Enable SSL when using DATABASE_URL (production/remote database)
-  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
-});
+// Create a pool configuration based on environment
+let poolConfig;
 
-// // db/db_utils.js
-// const pool = new Pool({
-//   // PRIORITIZE DATABASE_URL for remote connections (like Supabase/Render)
-//   connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`,
-//   // REQUIRED for secure connections to hosted databases like Supabase from local machine
-//   // Make sure this is only applied when connecting remotely/in production, otherwise it might
-//   // cause issues with local self-signed certificates or non-SSL local DBs.
-//   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false // Only enable SSL if DATABASE_URL is present
-// });
+// Check if we're running in production (Render)
+if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
+  console.log('Using production database configuration with DATABASE_URL');
+  poolConfig = {
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  };
+} else {
+  // Use local database configuration for development
+  console.log('Using local database configuration');
+  poolConfig = {
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT
+  };
+}
+
+// Create the pool with the appropriate configuration
+const pool = new Pool(poolConfig);
 
 // Log any errors from idle clients
 pool.on('error', (err, client) => {

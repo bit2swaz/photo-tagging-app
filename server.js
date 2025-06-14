@@ -8,8 +8,19 @@ const crypto = require('crypto');
 // Load environment variables from .env file
 dotenv.config();
 
+// Set NODE_ENV to 'production' if running on Render
+if (process.env.RENDER && !process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'production';
+}
+
 // Create Express application
 const app = express();
+
+// Add detailed request logging middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
 
 // Middleware
 // Configure CORS to accept requests from both production and development environments
@@ -42,12 +53,19 @@ app.use(express.json());
 // Define port
 const PORT = process.env.PORT || 3000;
 
+// Log environment and database connection info at startup
+console.log('Environment:', process.env.NODE_ENV || 'development');
+console.log('Database connection mode:', process.env.DATABASE_URL ? 'Using DATABASE_URL' : 'Using individual parameters');
+if (!process.env.DATABASE_URL && !process.env.DB_HOST) {
+  console.warn('WARNING: No DATABASE_URL or DB_HOST found in environment variables!');
+}
+
 // Store active game sessions in memory
 const activeGameSessions = new Map();
 
 // Routes
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Photo Tagging API is running!');
 });
 
 // API Routes
@@ -66,7 +84,8 @@ app.get('/api/photos', async (req, res) => {
     // Send more detailed error information in development
     const errorResponse = {
       error: 'Failed to fetch photos',
-      details: process.env.NODE_ENV !== 'production' ? error.message : undefined
+      details: process.env.NODE_ENV !== 'production' ? error.message : undefined,
+      stack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
     };
     res.status(500).json(errorResponse);
   }
