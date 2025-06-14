@@ -14,7 +14,7 @@ const app = express();
 // Middleware
 // Configure CORS
 const corsOptions = {
-  origin: 'https://photo-tagging-app.netlify.app/play',
+  origin: 'https://photo-tagging-app.netlify.app',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true, // Allow cookies to be sent
   optionsSuccessStatus: 204
