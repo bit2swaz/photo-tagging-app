@@ -17,7 +17,7 @@ const HowToPlayPage = () => {
   return (
     <div className={`${styles.howToPlayContainer} ${isVisible ? styles.visible : ''}`}>
       <header className={styles.pageHeader}>
-        <h1 className={styles.title}>How to Play</h1>
+      <h1 className={styles.title}>How to Play</h1>
         <p className={styles.subtitle}>Master the art of finding hidden characters in our photo tagging adventure</p>
       </header>
       
@@ -42,79 +42,79 @@ const HowToPlayPage = () => {
         <div className={styles.instructionsGrid}>
           <div className={styles.instructionCard}>
             <div className={styles.cardHeader}>
-              <div className={styles.stepNumber}>1</div>
+            <div className={styles.stepNumber}>1</div>
               <h3 className={styles.stepTitle}>Choose Difficulty</h3>
             </div>
             <div className={styles.cardIcon}>🎮</div>
-            <p className={styles.stepDescription}>
+              <p className={styles.stepDescription}>
               Select your preferred difficulty level: Easy (3 characters), 
-              Medium (5 characters), or Hard (7 characters). Each level features a 
-              different photo with varying complexity.
-            </p>
-          </div>
+                Medium (5 characters), or Hard (7 characters). Each level features a 
+                different photo with varying complexity.
+              </p>
+            </div>
           
           <div className={styles.instructionCard}>
             <div className={styles.cardHeader}>
-              <div className={styles.stepNumber}>2</div>
+            <div className={styles.stepNumber}>2</div>
               <h3 className={styles.stepTitle}>Study the Scene</h3>
             </div>
             <div className={styles.cardIcon}>👁️</div>
-            <p className={styles.stepDescription}>
+              <p className={styles.stepDescription}>
               Once the game begins, you'll see a detailed illustration. Take a moment 
               to familiarize yourself with the scene and the characters you need to find, 
               shown in the character list.
-            </p>
-          </div>
+              </p>
+            </div>
           
           <div className={styles.instructionCard}>
             <div className={styles.cardHeader}>
-              <div className={styles.stepNumber}>3</div>
+            <div className={styles.stepNumber}>3</div>
               <h3 className={styles.stepTitle}>Spot & Click</h3>
             </div>
             <div className={styles.cardIcon}>🖱️</div>
-            <p className={styles.stepDescription}>
-              When you spot one of the characters, click on their location in the photo. 
-              This will open a targeting box and a dropdown menu of available characters.
-            </p>
-          </div>
+              <p className={styles.stepDescription}>
+                When you spot one of the characters, click on their location in the photo. 
+                This will open a targeting box and a dropdown menu of available characters.
+              </p>
+            </div>
           
           <div className={styles.instructionCard}>
             <div className={styles.cardHeader}>
-              <div className={styles.stepNumber}>4</div>
+            <div className={styles.stepNumber}>4</div>
               <h3 className={styles.stepTitle}>Make Your Selection</h3>
             </div>
             <div className={styles.cardIcon}>✅</div>
-            <p className={styles.stepDescription}>
-              From the dropdown menu, select which character you think you've found. 
-              If you're correct, the character will be marked as found in your list. 
-              If not, keep searching!
-            </p>
-          </div>
+              <p className={styles.stepDescription}>
+                From the dropdown menu, select which character you think you've found. 
+                If you're correct, the character will be marked as found in your list. 
+                If not, keep searching!
+              </p>
+            </div>
           
           <div className={styles.instructionCard}>
             <div className={styles.cardHeader}>
-              <div className={styles.stepNumber}>5</div>
+            <div className={styles.stepNumber}>5</div>
               <h3 className={styles.stepTitle}>Beat the Clock</h3>
             </div>
             <div className={styles.cardIcon}>⏱️</div>
-            <p className={styles.stepDescription}>
-              A timer starts as soon as the game begins. Your goal is to find all characters 
-              as quickly as possible. The faster you find them all, the higher your score!
-            </p>
-          </div>
+              <p className={styles.stepDescription}>
+                A timer starts as soon as the game begins. Your goal is to find all characters 
+                as quickly as possible. The faster you find them all, the higher your score!
+              </p>
+            </div>
           
           <div className={styles.instructionCard}>
             <div className={styles.cardHeader}>
-              <div className={styles.stepNumber}>6</div>
+            <div className={styles.stepNumber}>6</div>
               <h3 className={styles.stepTitle}>Claim Victory</h3>
             </div>
             <div className={styles.cardIcon}>🏆</div>
-            <p className={styles.stepDescription}>
-              Once you've found all characters, the game ends. You'll see your completion 
-              time and have the option to submit your score to the leaderboard.
-            </p>
-          </div>
-        </div>
+              <p className={styles.stepDescription}>
+                Once you've found all characters, the game ends. You'll see your completion 
+                time and have the option to submit your score to the leaderboard.
+              </p>
+            </div>
+      </div>
       </section>
       
       <section className={styles.featuresSection}>
@@ -126,7 +126,7 @@ const HowToPlayPage = () => {
               Stuck on finding a particular character? Click the "Hint" button to get help. 
               The hint will show you the character's name and icon. Use hints wisely to improve 
               your gameplay experience!
-            </p>
+        </p>
           </div>
         </div>
         
@@ -151,22 +151,22 @@ const HowToPlayPage = () => {
               top spot for the fastest completion time on each difficulty level?
             </p>
           </div>
-        </div>
+      </div>
       </section>
       
       <section className={styles.ctaSection}>
         <h2 className={styles.ctaTitle}>Ready to Test Your Skills?</h2>
         <p className={styles.ctaText}>Jump into the game and start finding characters!</p>
-        <div className={styles.buttonsContainer}>
-          <Link to="/" className={`${styles.button} ${styles.secondaryButton}`}>
+      <div className={styles.buttonsContainer}>
+        <Link to="/" className={`${styles.button} ${styles.secondaryButton}`}>
             <span className={styles.buttonIcon}>🏠</span>
             <span>Back to Home</span>
-          </Link>
-          <Link to="/play" className={`${styles.button} ${styles.primaryButton}`}>
+        </Link>
+        <Link to="/play" className={`${styles.button} ${styles.primaryButton}`}>
             <span className={styles.buttonIcon}>🎮</span>
             <span>Start Playing</span>
-          </Link>
-        </div>
+        </Link>
+      </div>
       </section>
     </div>
   );

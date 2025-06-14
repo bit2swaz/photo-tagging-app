@@ -108,88 +108,88 @@ const PlayGameStartPage = () => {
       <h1 className={styles.title}>Game Setup</h1>
 
       <div className={styles.gameSetupWrapper}>
-        {/* Player Name Section */}
+      {/* Player Name Section */}
         <section className={`${styles.section} ${styles.playerSection}`}>
-          <h2 className={styles.sectionTitle}>Player Name</h2>
-          <div className={styles.nameInputContainer}>
-            <div className={styles.inputGroup}>
-              <input
-                type="text"
-                className={styles.nameInput}
-                placeholder="Enter your name"
-                value={playerName}
-                onChange={handleNameChange}
-              />
-              <button 
-                className={styles.guestButton}
-                onClick={handlePlayAsGuest}
-              >
-                Play as Guest
-              </button>
-            </div>
-            {playerName && (
-              <p className={styles.playerConfirmation}>You'll play as: <strong>{playerName}</strong></p>
-            )}
+        <h2 className={styles.sectionTitle}>Player Name</h2>
+        <div className={styles.nameInputContainer}>
+          <div className={styles.inputGroup}>
+            <input
+              type="text"
+              className={styles.nameInput}
+              placeholder="Enter your name"
+              value={playerName}
+              onChange={handleNameChange}
+            />
+            <button 
+              className={styles.guestButton}
+              onClick={handlePlayAsGuest}
+            >
+              Play as Guest
+            </button>
           </div>
-        </section>
+          {playerName && (
+              <p className={styles.playerConfirmation}>You'll play as: <strong>{playerName}</strong></p>
+          )}
+        </div>
+      </section>
 
-        {/* Map Selection Section */}
+      {/* Map Selection Section */}
         <section className={`${styles.section} ${styles.mapSection}`}>
-          <h2 className={styles.sectionTitle}>Choose Your Map</h2>
-          
+        <h2 className={styles.sectionTitle}>Choose Your Map</h2>
+        
           {isLoading && <p className={styles.loadingText}>Loading maps...</p>}
-          
-          {error && (
-            <div className={styles.errorMessage}>
-              <p>{error}</p>
-              <button 
-                onClick={() => window.location.reload()}
-                className={styles.retryButton}
+        
+        {error && (
+          <div className={styles.errorMessage}>
+            <p>{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+        
+        {!isLoading && !error && maps.length === 0 && (
+          <p>No maps available. Please check back later.</p>
+        )}
+        
+        {!isLoading && !error && maps.length > 0 && (
+          <div className={styles.difficultyOptions}>
+            {maps.map((map) => (
+              <div
+                key={map.id}
+                className={`${styles.difficultyCard} ${selectedMapId === map.id ? styles.selected : ''}`}
+                onClick={() => handleMapSelect(map.id)}
               >
-                Retry
-              </button>
-            </div>
-          )}
-          
-          {!isLoading && !error && maps.length === 0 && (
-            <p>No maps available. Please check back later.</p>
-          )}
-          
-          {!isLoading && !error && maps.length > 0 && (
-            <div className={styles.difficultyOptions}>
-              {maps.map((map) => (
-                <div
-                  key={map.id}
-                  className={`${styles.difficultyCard} ${selectedMapId === map.id ? styles.selected : ''}`}
-                  onClick={() => handleMapSelect(map.id)}
-                >
                   <div className={styles.cardImageContainer}>
-                    <img
-                      src={map.image_url}
-                      alt={map.name}
-                      className={styles.cardImage}
-                    />
+                <img
+                  src={map.image_url}
+                  alt={map.name}
+                  className={styles.cardImage}
+                />
                     {selectedMapId === map.id && (
                       <div className={styles.selectedOverlay}>
                         <div className={styles.checkmark}>✓</div>
                       </div>
                     )}
                   </div>
-                  <div className={styles.cardContent}>
-                    <h3 className={styles.cardTitle}>{map.name}</h3>
+                <div className={styles.cardContent}>
+                  <h3 className={styles.cardTitle}>{map.name}</h3>
                     <div className={styles.difficultyBadge} data-difficulty={map.difficulty.toLowerCase()}>
                       {map.difficulty} Difficulty
                     </div>
-                    <div className={styles.cardInfo}>
+                  <div className={styles.cardInfo}>
                       <span><strong>{getCharacterCount(map.difficulty)}</strong> characters</span>
-                      <span>~{getEstimatedTime(map.difficulty)}</span>
-                    </div>
+                    <span>~{getEstimatedTime(map.difficulty)}</span>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
       </div>
 
       {/* Start Game Button */}
