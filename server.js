@@ -12,13 +12,30 @@ dotenv.config();
 const app = express();
 
 // Middleware
-// Configure CORS
+// Configure CORS to accept requests from both production and development environments
+const allowedOrigins = [
+  'https://photo-tagging-app.netlify.app',  // Production frontend
+  'http://localhost:5173',                  // Development frontend (Vite default port)
+  'http://localhost:3000'                   // Alternative development port
+];
+
 const corsOptions = {
-  origin: 'https://photo-tagging-app.netlify.app',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked request from:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true, // Allow cookies to be sent
   optionsSuccessStatus: 204
 };
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -36,13 +53,22 @@ app.get('/', (req, res) => {
 // API Routes
 app.get('/api/photos', async (req, res) => {
   try {
+    console.log('GET /api/photos - Fetching photos from database');
+    
     const photos = await query(
       'SELECT id, name, image_url, difficulty, original_width_px, original_height_px FROM photos'
     );
+    
+    console.log(`GET /api/photos - Successfully fetched ${photos.length} photos`);
     res.json(photos);
   } catch (error) {
     console.error('Error fetching photos:', error);
-    res.status(500).json({ error: 'Failed to fetch photos' });
+    // Send more detailed error information in development
+    const errorResponse = {
+      error: 'Failed to fetch photos',
+      details: process.env.NODE_ENV !== 'production' ? error.message : undefined
+    };
+    res.status(500).json(errorResponse);
   }
 });
 

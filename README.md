@@ -110,3 +110,51 @@ This project was developed as part of [The Odin Project's](https://www.theodinpr
 ## ❤️ Made with Love
 
 Made with ❤️ by [bit2swaz](https://github.com/bit2swaz)
+
+## Backend Deployment
+
+### Environment Variables
+
+For the backend deployment on Render or similar services, make sure to set the following environment variables:
+
+```
+# Database Connection
+DATABASE_URL=postgres://your-supabase-connection-string
+
+# Server Port (usually set automatically by the hosting provider)
+PORT=3000
+
+# Optional - set to 'production' in production environment
+NODE_ENV=production
+```
+
+### Database Setup
+
+The application uses PostgreSQL. The database schema is defined in `db/db_schema.sql`.
+
+## Frontend Deployment
+
+### Environment Variables
+
+For the frontend deployment on Netlify, set the following environment variable:
+
+```
+VITE_API_BASE_URL=https://your-backend-api.onrender.com
+```
+
+## Local Development
+
+### Backend Setup
+
+1. Create a PostgreSQL database
+2. Copy `.env.example` to `.env` and update with your database credentials
+3. Run `npm install` to install dependencies
+4. Run `node db/db_setup.js` to set up the database schema and seed data
+5. Run `node server.js` to start the backend server
+
+### Frontend Setup
+
+1. Navigate to the client directory: `cd client/photo-tagging-frontend`
+2. Create a `.env` file with: `VITE_API_BASE_URL=http://localhost:3000`
+3. Run `npm install` to install dependencies
+4. Run `npm run dev` to start the development server
