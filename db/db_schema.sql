@@ -1,3 +1,8 @@
+-- Drop tables if they already exist to allow for clean re-runs
+DROP TABLE IF EXISTS scores CASCADE;        -- CASCADE drops dependent objects (like foreign keys)
+DROP TABLE IF EXISTS characters CASCADE;
+DROP TABLE IF EXISTS photos CASCADE;
+
 -- Table: photos
 CREATE TABLE photos (
     id SERIAL PRIMARY KEY,

@@ -5,13 +5,23 @@ const path = require('path');
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-// Create a new Pool instance
+// // Create a new Pool instance
+// const pool = new Pool({
+//   user: process.env.DB_USER,
+//   host: process.env.DB_HOST,
+//   database: process.env.DB_DATABASE,
+//   password: process.env.DB_PASSWORD,
+//   port: process.env.DB_PORT,
+// });
+
+// db/db_utils.js
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  // PRIORITIZE DATABASE_URL for remote connections (like Supabase/Render)
+  connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`,
+  // REQUIRED for secure connections to hosted databases like Supabase from local machine
+  // Make sure this is only applied when connecting remotely/in production, otherwise it might
+  // cause issues with local self-signed certificates or non-SSL local DBs.
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false // Only enable SSL if DATABASE_URL is present
 });
 
 // Log any errors from idle clients
