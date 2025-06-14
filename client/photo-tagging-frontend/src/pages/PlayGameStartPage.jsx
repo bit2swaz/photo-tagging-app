@@ -10,6 +10,9 @@ const PlayGameStartPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
+  
+  // Get API base URL from environment variable
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
   // Trigger entrance animation
   useEffect(() => {
@@ -25,7 +28,7 @@ const PlayGameStartPage = () => {
     const fetchMaps = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('http://localhost:3000/api/photos');
+        const response = await fetch(`${API_BASE_URL}/api/photos`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -43,7 +46,7 @@ const PlayGameStartPage = () => {
     };
 
     fetchMaps();
-  }, []);
+  }, [API_BASE_URL]);
 
   // Handle player name input change
   const handleNameChange = (e) => {

@@ -11,6 +11,9 @@ const GamePage = () => {
   const { photoId, playerName } = location.state || {};
   const gameImageContainerRef = useRef(null);
   
+  // Get API base URL from environment variable
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  
   // Audio refs
   const correctSoundRef = useRef(null);
   const incorrectSoundRef = useRef(null);
@@ -203,7 +206,7 @@ const GamePage = () => {
     
     try {
       setIsHintLoading(true);
-      const response = await fetch(`http://localhost:3000/api/game/${gameSessionId}/hint`);
+      const response = await fetch(`${API_BASE_URL}/api/game/${gameSessionId}/hint`);
       
       if (!response.ok) {
         throw new Error(`Failed to get hint: ${response.status}`);
@@ -242,14 +245,14 @@ const GamePage = () => {
         setIsLoading(true);
         
         // Fetch photo details
-        const photoResponse = await fetch(`http://localhost:3000/api/photos/${photoId}`);
+        const photoResponse = await fetch(`${API_BASE_URL}/api/photos/${photoId}`);
         if (!photoResponse.ok) {
           throw new Error(`Failed to fetch photo: ${photoResponse.status}`);
         }
         const photoData = await photoResponse.json();
         
         // Fetch characters for this photo
-        const charactersResponse = await fetch(`http://localhost:3000/api/photos/${photoId}/characters`);
+        const charactersResponse = await fetch(`${API_BASE_URL}/api/photos/${photoId}/characters`);
         if (!charactersResponse.ok) {
           throw new Error(`Failed to fetch characters: ${charactersResponse.status}`);
         }
@@ -273,14 +276,14 @@ const GamePage = () => {
     };
 
     fetchGameData();
-  }, [photoId]);
+  }, [photoId, API_BASE_URL]);
 
   // Start a new game session
   const startGameSession = async () => {
     if (gameSessionId) return; // Already have a session
 
     try {
-      const response = await fetch('http://localhost:3000/api/game/start', {
+      const response = await fetch(`${API_BASE_URL}/api/game/start`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -306,14 +309,16 @@ const GamePage = () => {
   // Submit score when game is complete
   const submitScore = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/scores', {
+      const response = await fetch(`${API_BASE_URL}/api/scores`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           gameSessionId,
-          playerName
+          photoId,
+          playerName,
+          timeElapsed
         }),
       });
       
@@ -378,7 +383,7 @@ const GamePage = () => {
 
     try {
       // Send validation request to server
-      const response = await fetch('http://localhost:3000/api/game/validate', {
+      const response = await fetch(`${API_BASE_URL}/api/game/validate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

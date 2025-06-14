@@ -2,23 +2,24 @@ import React, { useState, useEffect } from 'react';
 import styles from '../styles/Leaderboard.module.css';
 
 const Leaderboard = ({ photoId }) => {
-  const [leaderboardData, setLeaderboardData] = useState([]);
+  const [scores, setScores] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Get API base URL from environment variable
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        setIsLoading(true);
-        const response = await fetch(`http://localhost:3000/api/scores/${photoId}/leaderboard`);
+        const response = await fetch(`${API_BASE_URL}/api/scores/${photoId}/leaderboard`);
         
         if (!response.ok) {
           throw new Error(`Failed to fetch leaderboard: ${response.status}`);
         }
         
         const data = await response.json();
-        setLeaderboardData(data);
-        setError(null);
+        setScores(data);
       } catch (err) {
         console.error('Error fetching leaderboard:', err);
         setError('Failed to load leaderboard data');
@@ -30,7 +31,7 @@ const Leaderboard = ({ photoId }) => {
     if (photoId) {
       fetchLeaderboard();
     }
-  }, [photoId]);
+  }, [photoId, API_BASE_URL]);
 
   // Format time from milliseconds to MM:SS.ms
   const formatTime = (milliseconds) => {
@@ -73,7 +74,7 @@ const Leaderboard = ({ photoId }) => {
     <div className={styles.leaderboardContainer}>
       <h2 className={styles.leaderboardTitle}>Leaderboard</h2>
       
-      {leaderboardData.length === 0 ? (
+      {scores.length === 0 ? (
         <div className={styles.emptyMessage}>No scores recorded yet. Be the first!</div>
       ) : (
         <table className={styles.leaderboardTable}>
@@ -86,7 +87,7 @@ const Leaderboard = ({ photoId }) => {
             </tr>
           </thead>
           <tbody>
-            {leaderboardData.map((score, index) => (
+            {scores.map((score, index) => (
               <tr key={index} className={styles.leaderboardRow}>
                 <td className={styles.rankCell}>{index + 1}</td>
                 <td className={styles.playerCell}>{score.player_name}</td>
